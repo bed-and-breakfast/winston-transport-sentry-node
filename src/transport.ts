@@ -25,6 +25,7 @@ export interface SentryTransportOptions
   sentry?: Sentry.NodeOptions;
   levelsMap?: SeverityOptions;
   skipSentryInit?: boolean;
+  autoClearScope?: boolean;
 }
 
 interface SeverityOptions {
@@ -44,11 +45,16 @@ class ExtendedError extends Error {
 
 export default class SentryTransport extends TransportStream {
   public silent = false;
+  protected autoClearScope = true;
 
   private levelsMap: SeverityOptions = {};
 
   public constructor(opts?: SentryTransportOptions) {
     super(opts);
+    
+    if (opts?.autoClearScope === false) {
+      this.autoClearScope = false;
+    }
 
     this.levelsMap = this.setLevelsMap(opts && opts.levelsMap);
     this.silent = (opts && opts.silent) || false;
@@ -71,7 +77,9 @@ export default class SentryTransport extends TransportStream {
     const sentryLevel = this.levelsMap[winstonLevel];
 
     Sentry.configureScope((scope) => {
-      scope.clear();
+      if (this.autoClearScope) {
+        scope.clear();
+      }
 
       if (tags !== undefined && SentryTransport.isObject(tags)) {
         scope.setTags(tags);
