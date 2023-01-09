@@ -71,7 +71,7 @@ export default class SentryTransport extends TransportStream {
 
     if (this.silent) return callback();
 
-    const { message, tags, user, ...meta } = info;
+    const { message, name, level, stack, tags, user, ...meta } = info;
     const winstonLevel = info[LEVEL];
 
     const sentryLevel = this.levelsMap[winstonLevel];
@@ -85,9 +85,9 @@ export default class SentryTransport extends TransportStream {
         scope.setTags(tags);
       }
 
-      delete meta.name;
-      delete meta.level;
-      delete meta.stack;
+//       delete meta.name;
+//       delete meta.level;
+//       delete meta.stack;
       
       scope.setExtras(meta);
 
