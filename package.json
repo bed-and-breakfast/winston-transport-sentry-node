@@ -25,6 +25,7 @@
     "prepare": "npm run build",
     "test": "npm run build && tsc -p tsconfig.test.json && mocha"
   },
+  "repository": "https://github.com/bed-and-breakfast/winston-transport-sentry-node/tree/bbeu",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/aandrewww/winston-transport-sentry-node/issues"
