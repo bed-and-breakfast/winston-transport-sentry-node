@@ -51,7 +51,7 @@ export default class SentryTransport extends TransportStream {
 
   public constructor(opts?: SentryTransportOptions) {
     super(opts);
-    
+
     if (opts?.autoClearScope === false) {
       this.autoClearScope = false;
     }
@@ -60,7 +60,7 @@ export default class SentryTransport extends TransportStream {
     this.silent = (opts && opts.silent) || false;
 
     if (!opts || !opts.skipSentryInit) {
-      Sentry.init(SentryTransport.withDefaults(opts && opts.sentry || {}));
+      Sentry.init(SentryTransport.withDefaults((opts && opts.sentry) || {}));
     }
   }
 
@@ -76,30 +76,29 @@ export default class SentryTransport extends TransportStream {
 
     const sentryLevel = this.levelsMap[winstonLevel];
 
-    Sentry.configureScope((scope) => {
-      if (this.autoClearScope) {
-        scope.clear();
-      }
+    const scope = Sentry.getCurrentScope();
+    if (this.autoClearScope) {
+      scope.clear();
+    }
 
-      if (tags !== undefined && SentryTransport.isObject(tags)) {
-        scope.setTags(tags);
-      }
+    if (tags !== undefined && SentryTransport.isObject(tags)) {
+      scope.setTags(tags);
+    }
 
-      delete meta.name;
-      delete meta.level;
-      delete meta.stack;
-      
-      scope.setExtras(meta);
+    delete meta.name;
+    delete meta.level;
+    delete meta.stack;
 
-      if (user !== undefined && SentryTransport.isObject(user)) {
-        scope.setUser(user);
-      }
+    scope.setExtras(meta);
 
-      // TODO: add fingerprints
-      // scope.setFingerprint(['{{ default }}', path]); // fingerprint should be an array
+    if (user !== undefined && SentryTransport.isObject(user)) {
+      scope.setUser(user);
+    }
 
-      // scope.clear();
-    });
+    // TODO: add fingerprints
+    // scope.setFingerprint(['{{ default }}', path]); // fingerprint should be an array
+
+    // scope.clear();
 
     // TODO: add breadcrumbs
     // Sentry.addBreadcrumb({
@@ -112,7 +111,7 @@ export default class SentryTransport extends TransportStream {
       const error =
         Object.values(info).find((value) => value instanceof Error) ??
         new ExtendedError(info);
-      Sentry.captureException(error, { tags });
+      Sentry.captureException(error, { tags, level: sentryLevel });
 
       return callback();
     }

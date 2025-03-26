@@ -1,7 +1,7 @@
 {
   "name": "@bed-and-breakfast/winston-transport-sentry-node",
   "description": "@sentry/node transport for the winston v3 logger",
-  "version": "2.7.1-bed-and-breakfast",
+  "version": "3.0.0-bed-and-breakfast",
   "author": "Andrew Avdeev <andrewww.avdeev@gmail.com>",
   "keywords": [
     "logger",
@@ -53,6 +53,6 @@
     "typescript": "^4.4.3"
   },
   "peerDependencies": {
-    "@sentry/node": "^7.1.1"
+    "@sentry/node": "^8.13.0"
   }
 }
